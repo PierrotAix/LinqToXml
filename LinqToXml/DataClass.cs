@@ -14,7 +14,7 @@ namespace LinqToXml
             XDocument cdData = new XDocument(
                 new XDeclaration("1.0", "utf8", "yes"),
                 new XComment("Our CD Data"),
-                new XElement("CDStoreDate",
+                new XElement("CDStoreData",
                     new XAttribute("storeName", "Leaside"),
                     new XAttribute("Location", "Toronto, ON"),
 
@@ -23,7 +23,7 @@ namespace LinqToXml
                         new XElement("Artist","Kiss"),
                         new XElement("Genre", "Rock"),
                         new XElement("SalesInfo", 
-                            new XElement("Price","11.99"),
+                            new XElement("Price","12"),
                             new XElement("Qty","5"))),
 
                     new XElement("CD",
@@ -31,7 +31,7 @@ namespace LinqToXml
                         new XElement("Artist", "AC/DC"),
                         new XElement("Genre", "Rock"),
                         new XElement("SalesInfo",
-                            new XElement("Price", "16.99"),
+                            new XElement("Price", "17"),
                             new XElement("Qty", "10"))),
 
                     new XElement("CD",
@@ -39,7 +39,7 @@ namespace LinqToXml
                         new XElement("Artist", "Buddy Guy"),
                         new XElement("Genre", "Blues"),
                         new XElement("SalesInfo",
-                            new XElement("Price", "12.99"),
+                            new XElement("Price", "13"),
                             new XElement("Qty", "8"))),
 
                     new XElement("CD",
@@ -47,7 +47,7 @@ namespace LinqToXml
                         new XElement("Artist", "Gary Clark Jr"),
                         new XElement("Genre", "Blues"),
                         new XElement("SalesInfo",
-                            new XElement("Price", "12.99"),
+                            new XElement("Price", "14"),
                             new XElement("Qty", "7")))
                )
             );
