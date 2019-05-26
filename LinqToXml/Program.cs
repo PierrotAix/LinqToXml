@@ -17,14 +17,171 @@ namespace LinqToXml
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-           // Test01(); //
+            // Test01(); //
 
-           // Test02();
+            // Test02();
 
-            Test03();
+            // Test03();
+
+            //Test04();
+
+            //Test05();
+
+            Test06();
+            
 
             Console.ReadKey();
 
+        }
+
+        /// <summary>
+        /// Reading XML using LINQ in C#
+        /// https://www.youtube.com/watch?v=sfDPdflXbiM&t=173s
+        /// </summary>
+        private static void Test06()
+        {
+            XDocument xdoc = XDocument.Load(@"D:\BITBUCKET\c-sharp\LinqToXML\LinqToXml\LinqToXml\Ressources\products.xml");
+
+            // Selection
+            Console.WriteLine("\n-Affichage de tout ------------------------------------------------------------");
+
+            xdoc.Descendants("product").Select( p => new
+            {
+                id = p.Attribute("id").Value,
+                name = p.Element("name").Value,
+                price = p.Element("price").Value,
+                currency = p.Element("price").Attribute("currency").Value
+            }).ToList().ForEach( p =>
+            {
+                Console.WriteLine("Id: " + p.id);
+                Console.WriteLine("Name: " + p.name);
+                Console.WriteLine("Price: " + p.price);
+                Console.WriteLine("Currency: " + p.currency);
+                Console.WriteLine("=================================");
+            }
+            );
+
+            // using conditions
+            Console.WriteLine("\n-Prix supérieurs à 1000 ------------------------------------------------------------");
+            xdoc.Descendants("product")
+                .Where(p => Convert.ToInt32(p.Element("price").Value) > 1000)
+                .Select(p => new
+                {
+                    id = p.Attribute("id").Value,
+                    name = p.Element("name").Value,
+                    price = p.Element("price").Value,
+                    currency = p.Element("price").Attribute("currency").Value
+                }).ToList().ForEach(p =>
+                {
+                    Console.WriteLine("Id: " + p.id);
+                    Console.WriteLine("Name: " + p.name);
+                    Console.WriteLine("Price: " + p.price);
+                    Console.WriteLine("Currency: " + p.currency);
+                    Console.WriteLine("=================================");
+                });
+
+            Console.WriteLine("\n-Nom qui contien Nokia------------------------------------------------------------");
+            xdoc.Descendants("product")
+                .Where(p => p.Element("name").Value.Contains("Nokia") )
+                .Select(p => new
+                {
+                    id = p.Attribute("id").Value,
+                    name = p.Element("name").Value,
+                    price = p.Element("price").Value,
+                    currency = p.Element("price").Attribute("currency").Value
+                }).ToList().ForEach(p =>
+                {
+                    Console.WriteLine("Id: " + p.id);
+                    Console.WriteLine("Name: " + p.name);
+                    Console.WriteLine("Price: " + p.price);
+                    Console.WriteLine("Currency: " + p.currency);
+                    Console.WriteLine("=================================");
+                });
+
+            Console.WriteLine("\n-Tri par prix ------------------------------------------------------------");
+            xdoc.Descendants("product")
+                //.Where(p => p.Element("name").Value.Contains("Nokia"))
+                .Select(p => new
+                {
+                    id = p.Attribute("id").Value,
+                    name = p.Element("name").Value,
+                    price = p.Element("price").Value,
+                    currency = p.Element("price").Attribute("currency").Value
+                }).ToList()
+                .OrderByDescending(p => p.price).ToList()
+                .ForEach(p =>
+                {
+                    Console.WriteLine("Id: " + p.id);
+                    Console.WriteLine("Name: " + p.name);
+                    Console.WriteLine("Price: " + p.price);
+                    Console.WriteLine("Currency: " + p.currency);
+                    Console.WriteLine("=================================");
+                });
+
+
+        }
+
+        //
+
+        /// <summary>
+        /// Part 7 Transform one XML format to another XML format using linq to xml
+        /// </summary>
+        private static void Test05()
+        {
+            XDocument xmlDocument = XDocument.Load(@"D:\BITBUCKET\c-sharp\LinqToXML\LinqToXml\LinqToXml\Ressources\XMLFileExample.xml");
+
+            XDocument result = new XDocument(
+                new XElement("Students",
+                    new XElement("USA",
+                    from s in xmlDocument.Descendants("Student")
+                    where s.Attribute("Country").Value == "USA"
+                    select new XElement("Student",
+                        new XElement("Name", s.Element("Name").Value),
+                        new XElement("Gender", s.Element("Gender").Value),
+                        new XElement("TotalMarks", s.Element("TotalMarks").Value)
+                        )),
+                    new XElement("India",
+                    from s in xmlDocument.Descendants("Student")
+                    where s.Attribute("Country").Value == "India"
+                    select new XElement("Student",
+                        new XElement("Name", s.Element("Name").Value),
+                        new XElement("Gender", s.Element("Gender").Value),
+                        new XElement("TotalMarks", s.Element("TotalMarks").Value)
+                        ))
+                ));
+
+            result.Save(@"D:\BITBUCKET\c-sharp\LinqToXML\LinqToXml\LinqToXml\Ressources\Result.xml");
+        }
+
+        /// <summary>
+        /// Part 6 Transforming XML to HTML table using LINQ to XML
+        /// https://www.youtube.com/watch?v=nNMiyILom3s&list=PL6n9fhu94yhX-U0Ruy_4eIG8umikVmBrk&index=7&t=0s
+        /// </summary>
+        private static void Test04()
+        {
+            XDocument result = new XDocument(
+                new XElement("table",new XAttribute("border",1),
+                    new XElement("thead",
+                        new XElement("tr",
+                            new XElement("th","Country"),
+                            new XElement("th","Country"),
+                            new XElement("th","Gender"),
+                            new XElement("th", "TotalMarks")
+                            )
+                        ),
+                    new XElement("tbody",
+                    from student in XDocument.Load(@"D:\BITBUCKET\c-sharp\LinqToXML\LinqToXml\LinqToXml\Ressources\XMLFileExample.xml")
+                            .Descendants("Student")
+                            select new XElement("tr",
+                                new XElement("td", student.Attribute("Country").Value),
+                                new XElement("td", student.Element("Name").Value),
+                                new XElement("td", student.Element("Gender").Value),
+                                new XElement("td", student.Element("TotalMarks").Value)
+                        )
+                )
+                ));
+
+            result.Save(@"D:\BITBUCKET\c-sharp\LinqToXML\LinqToXml\LinqToXml\Ressources\Result.htm");
         }
 
         private static void Test03()

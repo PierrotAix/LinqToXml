@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<products>
+  <product id="p1">
+    <name>Nokia 1</name>
+    <price currency="USD">1000</price>
+  </product>
+  <product id="p2">
+    <name>Samsung 2</name>
+    <price currency="EUR">2000</price>
+  </product>
+  <product id="p3">
+    <name>Apple 3</name>
+    <price currency="AUS">3000</price>
+  </product>
+</products>
