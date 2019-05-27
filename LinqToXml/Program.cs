@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace LinqToXml
@@ -27,11 +28,104 @@ namespace LinqToXml
 
             //Test05();
 
-            Test06();
-            
+            //Test06();
+
+            //Test07();
+
+            //Test08(); // KO
+
+            //Test09(); // OK
+
+            Test10();
+
 
             Console.ReadKey();
 
+        }
+
+        /// <summary>
+        /// https://stackoverflow.com/questions/12087014/how-can-i-get-all-text-nodes-from-xml-file
+        /// </summary>
+        private static void Test10()
+        {
+            string input = @"
+            <root>
+                <slide>
+                    <Image>hi</Image>
+                    <ImageContent>this</ImageContent>
+                    <Thumbnail>is</Thumbnail>
+                    <ThumbnailContent>A</ThumbnailContent>
+                </slide>
+            </root>";
+
+            XDocument doc = XDocument.Parse(input);
+            //You can also load data from file by passing file path to Load method
+            //XDocument doc = XDocument.Load("Data.xml");
+            foreach (var slide in doc.Root.Elements("slide"))
+            {
+                var words = slide.Elements().Select(el => el.Value);
+                string s = String.Join(" ", words.ToArray());
+            }
+        }
+
+        /// <summary>
+        /// https://support.microsoft.com/fr-fr/help/307548/how-to-read-xml-from-a-file-by-using-visual-c
+        /// </summary>
+        private static void Test09()
+        {
+            XmlTextReader reader = new XmlTextReader(@"D:\BITBUCKET\c-sharp\LinqToXML\LinqToXml\LinqToXml\Ressources\products.xml");
+            while (reader.Read())
+            {
+                switch (reader.NodeType)
+                {
+                    case XmlNodeType.Element: // The node is an element.
+                        Console.Write("<" + reader.Name);
+                        Console.WriteLine(">");
+                        break;
+                    case XmlNodeType.Text: //Display the text in each element.
+                        Console.WriteLine(reader.Value);
+                        break;
+                    case XmlNodeType.EndElement: //Display the end of the element.
+                        Console.Write("</" + reader.Name);
+                        Console.WriteLine(">");
+                        break;
+                }
+            }
+
+        }
+
+        private static void Test08()
+        {
+            XDocument xdoc = XDocument.Load(@"D:\BITBUCKET\c-sharp\LinqToXML\LinqToXml\LinqToXml\Ressources\products.xml");
+
+            foreach (var infoWebService in xdoc.Root.Elements("products"))
+                foreach (var str in infoWebService.Element("product").Elements("name").Elements().Select(x => x.Value).ToArray())
+                    Console.WriteLine(str);
+        }
+
+        private static void Test07()
+        {
+            XDocument xdoc = XDocument.Load(@"D:\BITBUCKET\c-sharp\LinqToXML\LinqToXml\LinqToXml\Ressources\products.xml");
+
+            // Selection
+            Console.WriteLine("\n-Affichage de tout ------------------------------------------------------------");
+            xdoc.Elements("things").Select(p => new
+
+            //xdoc.Descendants("product").Select(p => new
+            {
+                id = p.Attribute("id").Value,
+                name = p.Element("name").Value,
+                price = p.Element("price").Value,
+                currency = p.Element("price").Attribute("currency").Value
+            }).ToList().ForEach(p =>
+            {
+                Console.WriteLine("Id: " + p.id);
+                Console.WriteLine("Name: " + p.name);
+                Console.WriteLine("Price: " + p.price);
+                Console.WriteLine("Currency: " + p.currency);
+                Console.WriteLine("=================================");
+            }
+            );
         }
 
         /// <summary>
