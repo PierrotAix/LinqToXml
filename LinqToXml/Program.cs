@@ -36,10 +36,37 @@ namespace LinqToXml
 
             //Test09(); // OK
 
-            Test10();
+            //Test10();
+
+            Test11(); // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/how-to-retrieve-the-value-of-an-element-linq-to-xml
+
 
 
             Console.ReadKey();
+
+        }
+
+        private static void Test11()
+        {
+            XElement e = new XElement("StringElement", "abcde");
+            Console.WriteLine($"e: {e}"); //e: < StringElement > abcde </ StringElement >
+            Console.WriteLine($"e.Value: {e.Value}"); // e.Value: abcde
+
+            Console.WriteLine("-------------------------------------------------------------");
+
+            XElement root = new XElement( "Root",
+                new XElement("Child1","child 1 content"),
+                new XElement("Child2","child 2 content")
+                );
+
+            // The following assignments show why it is easier to use  
+            // casting when the element might or might not exist.
+            string c1 = (string)root.Element("Child1");
+            Console.WriteLine("c1:{0}" , c1 ?? "element does not exist"); //c1 == null ? "element does not exist" : c1) // c1:child 1 content
+
+            string c3 = (string)root.Element("Child3");
+            Console.WriteLine("c3:{0}" , c3 ?? "element does not exist"); //c3:element does not exist
+
 
         }
 
