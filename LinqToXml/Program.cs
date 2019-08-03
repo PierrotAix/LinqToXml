@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Linq.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,12 +39,82 @@ namespace LinqToXml
 
             //Test10();
 
-            Test11(); // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/how-to-retrieve-the-value-of-an-element-linq-to-xml
+            //Test11(); // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/how-to-retrieve-the-value-of-an-element-linq-to-xml
 
-
+            TestSetElementValue();
 
             Console.ReadKey();
 
+        }
+
+        private static void TestSetElementValue()
+        {
+            //Définition d'une référence vers un des éléments de l'arbre XML pour un usage futur
+            XElement firstParticipant;
+
+            XDocument xDocument = new XDocument(
+                new XElement("BookParticipants", firstParticipant =
+                    new XElement("BookParticipant",
+                        new XAttribute("type", "Author"),
+                        new XElement("FirstName", "Joe"),
+                        new XElement("LastName", "Rattz")
+                    ),
+                    new XElement("BookParticipant",
+                        new XAttribute("type", "Editor"),
+                        new XElement("FirstName", "Pierre"),
+                        new XElement("LastName", "DESMAZES")
+                    ),
+                    new XElement("BookParticipant",
+                        new XAttribute("type", "Designer"),
+                        new XElement("FirstName", "Christine"),
+                        new XElement("LastName", "DESMAZES")
+                    )
+                )
+            );
+
+            Console.WriteLine("\n Avant la mise à jour des éléments");
+            Console.WriteLine(xDocument);
+
+            // Recherche d'une liste d'élements particuliers
+            IEnumerable<XElement> myFoundElements = from el in xDocument.Elements("BookParticipants")
+                                 where (string)el.Element("BookParticipant").Element("FirstName") == "Joe"
+                                 select el;
+
+            // Sur chacun des éléments trouvés, action
+            foreach (XElement myFoundElement in myFoundElements)
+            {
+                myFoundElement.Element("BookParticipant").SetElementValue("Prenom", "Joe");
+            }
+
+            // Suppression de plusieurs élément: tout les FirstName des DESMAZES
+            // add Assembly: System.Data.Linq (in System.Data.Linq.dll) to use this feature: SqlMethods.Like((string)el.Element("LastName"), "DES%") 
+            myFoundElements = from el in xDocument.Elements("BookParticipants").Elements("BookParticipant")
+                              where el.Element("LastName").Value.StartsWith("DESMA")
+                              select el;
+
+            // Sur chacun des éléments trouvés, action
+            foreach (XElement myFoundElement in myFoundElements)
+            {
+                myFoundElement.SetElementValue("FirstName", null);
+            }
+
+            Console.WriteLine("\n Après la mise à jour des éléments");
+            Console.WriteLine(xDocument);
+
+            // Mise à jour de la valeur d'un élément
+            // L'élément enfant FirstName étant trouvé, sa valeur sera initalisée à Joseph
+            firstParticipant.SetElementValue("FirstName", "Joseph");
+
+            // Ajout d'un élément
+            // L'élément enfant MiddleInitial n'étant pas trouvé, il est créé
+            firstParticipant.SetElementValue("MiddleInitial", "C");
+
+            // Suppression d'un élément
+            // La valeur de l'élément étant initialisée à null, l'élément est supprimé
+            firstParticipant.SetElementValue("LastName", null);
+
+            Console.WriteLine("\n Après la mise à jour des éléments");
+            Console.WriteLine(xDocument);
         }
 
         private static void Test11()
